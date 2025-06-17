@@ -5,16 +5,20 @@
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
+
 import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import BottomNav from './src/screens/BottomNav';
+// import { useFonts } from '@expo-google-fonts/odibee-sans';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
+  // let [fontsLoaded] = useFonts({
+  //       'Odibee Sans': require('@expo-google-fonts/odibee-sans'),
+  //   });
   return (
     <View style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <NewAppScreen templateFileName="App.tsx" />
+      <StatusBar barStyle="light-content" backgroundColor="black" />
+      {/* <Navigation /> */}
+      <BottomNav />
     </View>
   );
 }
