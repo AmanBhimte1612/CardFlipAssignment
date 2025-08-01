@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-// import SnowFlakeButton from '../components/SnowFlakeButton';
 import Button from '../components/Button';
 import SnowFlakeButton from '../components/SnowFlakeButton';
 import Card from '../components/Card';
@@ -12,7 +11,7 @@ export default function YoloPayScreen() {
     return (
         <ScrollView style={styles.container}>
             <View>
-                <Text style={styles.title}>Select Payment Mode</Text>
+                <Text style={styles.title}>select payment mode</Text>
                 <Text style={styles.subtitle}>
                     Choose your preferred payment method to make payment.
                 </Text>
@@ -27,12 +26,15 @@ export default function YoloPayScreen() {
                 <Text style={styles.cardLabel}>YOUR DIGITAL DEBIT CARD</Text>
 
                 <View style={styles.cardSection}>
-                    <Card toggle={isCardFlipped} />
-                    <View style={styles.freezeSection}>
-                        <SnowFlakeButton onToggle={(flipped) => {
-                            setIsCardFlipped(flipped);
-                            console.log(`Card flipped state updated: ${flipped}`);
-                        }} />
+                    <View style={styles.sides}>
+                        <Card toggle={isCardFlipped} />
+                    </View>
+                    <View style={styles.sides}>
+                        <View style={{position:'absolute',right:50,bottom:60 }}>
+                            <SnowFlakeButton onToggle={(flipped: boolean) => {
+                                setIsCardFlipped(flipped);
+                            }} />
+                        </View>
                     </View>
                 </View>
             </View>
@@ -43,16 +45,24 @@ export default function YoloPayScreen() {
 
 
 const styles = StyleSheet.create({
-    container: {
+    sides: {
+        backgroundColor: 'red',
+        // width: '48%',         // slightly less than 50% to account for margin
+        // height: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 4,
+    }, container: {
         flex: 1,
         backgroundColor: 'black',
         padding: 24,
         paddingTop: 38,
     },
     title: {
-        fontSize: 25,
+        fontSize: 22,
         fontWeight: '600',
         color: '#fff',
+        marginTop: 40,
         marginBottom: 16,
     },
     subtitle: {
@@ -66,25 +76,26 @@ const styles = StyleSheet.create({
     },
     cardLabel: {
         color: '#535353',
-        fontSize: 15,
+        fontSize: 14,
     },
 
 
     cardSection: {
-
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
         paddingHorizontal: 4,
         paddingVertical: 20,
         position: 'relative',
     },
     freezeSection: {
+        backgroundColor: 'red',
         alignItems: 'center',
         position: 'absolute',
-        right: 90,
-        top: 90,
         justifyContent: 'center',
+        // right: 90,
+        // top: 90,
         marginLeft: 16,
     },
 

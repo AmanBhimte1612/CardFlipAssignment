@@ -9,7 +9,7 @@ interface Props {
 }
 
 const SnowFlakeButton = ({ onToggle }: Props) => {
-    const [isRed, setIsRed] = useState(true);
+    const [isRed, setIsRed] = useState(onToggle);
 
     const handleToggle = () => {
         const newState = !isRed;

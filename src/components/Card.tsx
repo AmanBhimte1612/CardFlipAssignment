@@ -9,13 +9,17 @@ type Props = {
     toggle: boolean;
 };
 
-const Card = ({ toggle = false }: Props) => {
+const Card = ({ toggle }: Props) => {
     const morphAnim = useRef(new Animated.Value(0)).current;
     const contentOpacity = useRef(new Animated.Value(1)).current;
     const contentTranslateY = useRef(new Animated.Value(0)).current;
 
 
-    const randomCardNumber = faker.finance.creditCardNumber('Visa').match(/.{1,4}/g);
+    const rawCardNumber = faker.finance.creditCardNumber('Visa')
+        .replace(/\D/g, '')
+        .padEnd(16, '0')
+        .slice(0, 16);
+    const randomCardNumber = rawCardNumber.match(/.{1,4}/g);
     const randomExpiry = faker.date.future().toISOString().slice(2, 7).replace('-', '/'); // MM/YY format
     const randomCVV = faker.finance.creditCardCVV();
 
@@ -33,23 +37,23 @@ const Card = ({ toggle = false }: Props) => {
                 useNativeDriver: true,
             }),
             Animated.timing(contentTranslateY, {
-                toValue: !toggle ? 20 : 0, 
+                toValue: !toggle ? 20 : 0,
                 duration: 500,
                 useNativeDriver: true,
             }),
         ]).start();
     }, [toggle]);
 
-    
+
 
     const opacityInterpolation = morphAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: [1, 0.7], // Fade effect
+        outputRange: [1, 0.9], // Fade effect
     });
 
     const backgroundColorInterpolation = morphAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: ['rgba(199, 199, 199, 0.35)', 'rgba(255, 255, 255, 0.97)'],
+        outputRange: ['rgba(0, 0, 0, 0.35)', 'rgba(123, 121, 121, 1)'],
 
     });
 
@@ -69,72 +73,84 @@ const Card = ({ toggle = false }: Props) => {
                     style={styles.cardImage}
                     resizeMode="cover"
                 />
-
                 <>
 
-                            <LinearGradient
-                                colors={['rgba(0, 0, 0, 0.49)', 'rgba(0, 0, 0, 0.59)']}
-                                start={{ x: 0.5, y: 0 }}
-                                end={{ x: 0.5, y: 1 }}
-                                locations={[0.1, 0.9]}
-                                style={styles.gradient}
-                            />
 
-                            <Animated.View style={[
+                    <Animated.View style={[
                         styles.contentOverlay,
                         {
+                            backgroundColor: 'rgba(0, 0, 0, 0.68)',
                             opacity: contentOpacity,
-                            transform: [{ translateY: contentTranslateY }],
                         },
                     ]}>
-                                <Image
-                                    source={require('../assets/yolo_logo.png')}
-                                    style={{ width: 60, height: 18 }}
-                                    resizeMode="stretch"
-                                />
+                        <Image
+                            source={require('../assets/yolo_logo.png')}
+                            style={{ width: 60, height: 18, marginLeft: 3 }}
+                            resizeMode="stretch"
+                        />
 
-                                <Image
-                                    source={require('../assets/yes-bank-logo.png')}
-                                    style={styles.yesBankLogo}
-                                    resizeMode="contain"
-                                />
+                        <Image
+                            source={require('../assets/yes-bank-logo.png')}
+                            style={styles.yesBankLogo}
+                            resizeMode="contain"
+                        />
 
-                                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-                                    <View style={styles.cardDetails}>
-                                        {randomCardNumber.map((block, index) => (
-                                            <Text key={index} style={styles.cardNumber}>{block}</Text>
-                                        ))}
-                                        <View style={styles.expiryCvv}>
-                                            <TouchableOpacity style={styles.copyButton}>
-                                                <Copy size={24} color="red" />
-                                                <Text style={styles.copyText}>copy details</Text>
-                                            </TouchableOpacity>
-                                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                            <View style={styles.cardDetails}>
+                                {randomCardNumber.map((block, index) => (
+                                    <View key={index} >
+                                        <Text style={styles.cardNumber}>{block}</Text>
+
+                                        {/* Show image between rows, i.e., after 1st, 2nd, and 3rd */}
+                                        {index < randomCardNumber.length - 1 && (
+                                            <Image
+                                                source={require('../assets/icons/Union.png')}
+                                                style={{ position: 'absolute', left: -4, top: 4 ,tintColor:'white'}}
+                                            />
+                                        )}
                                     </View>
+                                ))}
 
-                                    <View style={{ position: 'absolute', right: 10 }}>
-                                        <View>
-                                            <Text style={{ color: '#676767' }}>expiry</Text>
-                                            <Text style={{ color: 'white', fontSize: 18 }}>{randomExpiry}</Text>
-                                        </View>
-                                        <View style={{ marginTop: 25 }}>
-                                            <Text style={{ color: '#676767' }}>cvv</Text>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={{ color: '#ffffff', fontSize: 30 }}>***</Text>
-                                                <EyeOff size={28} color="red" style={{ marginLeft: 8, marginTop: 5 }} />
-                                            </View>
-                                        </View>
+                                <View style={styles.expiryCvv}>
+                                    <TouchableOpacity style={styles.copyButton}>
+                                        <Image
+                                            source={require('../assets/icons/u_copy.png')}
+                                            style={{
+                                                width: 24, height: 24,
+                                                tintColor: 'red'
+                                            }}
+                                        />
+                                        <Text style={styles.copyText}>copy details</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            <View style={{ position: 'absolute', right: 10 }}>
+                                <View>
+                                    <Text style={{ color: '#676767' }}>expiry</Text>
+                                    <Text style={{ color: 'white', fontSize: 18 }}>{randomExpiry}</Text>
+                                </View>
+                                <View style={{ marginTop: 25 }}>
+                                    <Text style={{ color: '#676767' }}>cvv</Text>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                        <Image
+                                            source={require('../assets/icons/Frame.png')}
+                                            style={{ width: 45, height: 15, tintColor: 'white' }}
+                                        />
+                                        <EyeOff size={22} color="red" style={{ marginLeft: 8, marginTop: 5 }} />
                                     </View>
                                 </View>
+                            </View>
+                        </View>
 
-                                <Image
-                                    source={require('../assets/Rupaylogo.png')}
-                                    style={styles.rupayLogo}
-                                    resizeMode="contain"
-                                />
-                            </Animated.View>
+                        <Image
+                            source={require('../assets/Rupaylogo.png')}
+                            style={styles.rupayLogo}
+                            resizeMode="contain"
+                        />
+                    </Animated.View>
 
-                        
+
                 </>
 
             </Animated.View>
@@ -148,6 +164,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     gradient: {
+
         borderRadius: 20,
         position: 'absolute',
         width: 180,
@@ -176,7 +193,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 28,
         position: 'absolute',
-        top: 10,
+        top: 4,
         right: -8,
     },
     cardDetails: {
@@ -187,8 +204,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'white',
         letterSpacing: 3,
-        marginBottom: 4,
-        fontFamily: 'Odibee Sans',
+        marginBottom: 10,
+        fontFamily: 'OdibeeSans_Regular',
     },
     expiryCvv: {
         flexDirection: 'row',
